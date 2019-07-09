@@ -1836,7 +1836,8 @@ char *showinterJSON(*len) {
             }
 
             l = snprintf(p, buflen,
-                         "{type:Feature,geometry:{type:Point,coordinates:[ %-7.03f, %-7.03f]},properties:{hexaddr:%-6s,flight:%-8s,track:%-3d,speed:%-3d,seen:%-4d}",
+                         "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[ \"%-7.03f\", \"%-7.03f\"]},\"properties\":{\"hexaddr\":\"%-6s\",\"flight\":\"%-8s\",\"track\":\"%-3d\",\"speed\""
+                         ":\"%-3d\",\"seen\":\"%-4d\"}},\n",
                          a->lat, a->lon, a->hexaddr, a->flight, a->track, speed, (int) (now - a->seen));
             p += l;
             buflen -= l;

@@ -282,3 +282,28 @@ Credits
 
 Dump1090 was written by Salvatore Sanfilippo <antirez@gmail.com> and is
 released under the BSD three clause license.
+
+
+### Data
+
+It seems if you point a client to this app  i.e.
+
+     localhost::8080 then the logic that is fired is
+
+    1) Are we asking for /data.json 
+       The C-code produces a dynamic data stream - and returns that to the calling program.
+
+    2) If however there is simply an http call to this port, and the file gmap.html is present, then this is loaded. However this will not work, as Google Maps has restricted its service.
+
+
+We can see the data by 
+
+     curl http://127.0.0.1:8080/data.json
+
+[
+{"hex":"78056c", "flight":"CSZ9137 ", "lat":22.608839, "lon":114.043833, "altitude":10500, "track":11, "speed":298},
+{"hex":"89902b", "flight":"TTW301  ", "lat":22.209961, "lon":113.993292, "altitude":14575, "track":237, "speed":380}
+]
+
+
+
