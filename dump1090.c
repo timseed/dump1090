@@ -252,8 +252,7 @@ int modesMessageLenByType(int type);
 void sigWinchCallback();
 
 int getTermRows();
-char *showinterJSON(*len);
-char *aircraftsToGeoJson(int *len);
+char *showinterJSON(int *len);
 
 /* ============================= Utility functions ========================== */
 
@@ -1835,10 +1834,12 @@ char *showinterJSON(*len) {
                 speed *= 1.852;
             }
 
-            l = snprintf(p, buflen,
-                         "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[ \"%-7.03f\", \"%-7.03f\"]},\"properties\":{\"hexaddr\":\"%-6s\",\"flight\":\"%-8s\",\"track\":\"%-3d\",\"speed\""
-                         ":\"%-3d\",\"seen\":\"%-4d\"}},\n",
-                         a->lat, a->lon, a->hexaddr, a->flight, a->track, speed, (int) (now - a->seen));
+//            l = snprintf(p, buflen,
+//                         "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[ %-7.03f, %-7.03f]},\"properties\":{\"hexaddr\":\"%-6s\",\"flight\":\"%-8s\",\"track\":\"%-3d\",\"speed\""
+//                         ":\"%-3d\",\"seen\":\"%-4d\"}},\n",
+//                         a->lat, a->lon, a->hexaddr, a->flight, a->track, speed, (int) (now - a->seen));
+
+            l = snprintf(p, buflen,"{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[ %-7.03f, %-7.03f]},\"properties\":{\"name\":\"%-20s\"}},\n",a->lon, a->lat, a->hexaddr);
             p += l;
             buflen -= l;
             /* Resize if needed. */
@@ -2257,74 +2258,6 @@ char *showinterJSON(*len) {
         return buf;
     }
 
-
-/* Return a description of planes in json. */
-    char *aircraftsToGeoJson(int *len) {
-        struct aircraft *a = Modes.aircrafts;
-        int buflen = 1024; /* The initial buffer is incremented as needed. */
-        char *buf = malloc(buflen), *p = buf;
-        int l;
-
-        /* Sample GeoJson
-         * {
-      "type": "Feature",
-      "geometry": {
-        "type": "Point",
-        "coordinates": [125.6, 10.1]
-      },
-      "properties": {
-        "name": "Dinagat Islands"
-      }
-    }
-
-         */
-
-        l = snprintf(p, buflen, "[\n");
-        p += l;
-        buflen -= l;
-        while (a) {
-            int altitude = a->altitude, speed = a->speed;
-
-            /* Convert units to metric if --metric was specified. */
-            if (Modes.metric) {
-                altitude /= 3.2828;
-                speed *= 1.852;
-            }
-
-            if (a->lat != 0 && a->lon != 0) {
-
-                l = snprintf(p, buflen,
-                             "{\"type\":\"Feature\",\"hex\":\"%s\", \"flight\":\"%s\", \"lat\":%f, "
-                             "\"lon\":%f, \"altitude\":%d, \"track\":%d, "
-
-                             "\"speed\":%d},\n",
-                             a->hexaddr, a->flight, a->lat, a->lon, a->altitude, a->track,
-                             a->speed);
-                p += l;
-                buflen -= l;
-                /* Resize if needed. */
-                if (buflen < 256) {
-                    int used = p - buf;
-                    buflen += 1024; /* Our increment. */
-                    buf = realloc(buf, used + buflen);
-                    p = buf + used;
-                }
-            }
-            a = a->next;
-        }
-        /* Remove the final comma if any, and closes the json array. */
-        if (*(p - 2) == ',') {
-            *(p - 2) = '\n';
-            p--;
-            buflen++;
-        }
-        l = snprintf(p, buflen, "]\n");
-        p += l;
-        buflen -= l;
-
-        *len = p - buf;
-        return buf;
-    }
 
 
 #define MODES_CONTENT_TYPE_HTML "text/html;charset=utf-8"
